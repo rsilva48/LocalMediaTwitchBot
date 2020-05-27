@@ -4,16 +4,19 @@
 //Media player executable paths, only leave one of both uncommented. (With "//" at the beggining of the line)
 const mp = "C:\\Program Files\\MPC-HC\\mpc-hc64.exe"; //Media Player Classic.
 //const mp = "C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe"; //PotPlayer.
-const mdir = ""; //Media directory. (Where the files are stored)
-const channelname = ''; //Twitch.tv channel name.
-const botUsername = ''; //Twitch bot account username.
-const oauthpass = ''; //Generate oauthpass here: https://twitchapps.com/tmi/
+const mdir = "C:\\Users\\Harunoki__48\\Videos\\"; //Media directory. (Where the files are stored)
+const channelname = 'Harunoki__48'; //Twitch.tv channel name.
+const botUsername = 'H48Bot'; //Twitch bot account username.
+const oauthpass = 'oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; //Generate oauthpass here: https://twitchapps.com/tmi/
 const chatOutput = true; //Enables or disable the bot output on the chat.
 const debugOutput = false; //Enables or disable the bot debug output on console.
 const decisionDebug = false; //Enables or disable the bot debug output on console related to the decisions when bot returns multiple results.
 const searchDebug = false; //Enables or disable the bot debug output on console related to the file search results.
-const conmsg = [`Greetings, ${botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "!play" then the name of the file.`] //Set startup messages to be send when connected.
-const ignorebot = true;
+const ignorebot = true;,
+const suffix = '!'; //Change the suffix for the commands, by defaut they start with!
+const testcmnd = 'ping'; //Change the test command
+const testresponse = 'pong!'; //Change the message send as a response to the test command
+const conmsg = [`Greetings, ${botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${suffix}play" then the name of the file.`] //Set startup messages to be send when connected.
 //End of Settings
 
 module.exports={
@@ -27,5 +30,8 @@ module.exports={
   decisionDebug,
   searchDebug,
   conmsg,
-  ignorebot
+  ignorebot,
+  suffix,
+  testcmnd,
+  testresponse
 }

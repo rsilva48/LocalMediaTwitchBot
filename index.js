@@ -23,13 +23,14 @@ const suffix = settings.suffix;
 const testcmnd = settings.testcmnd;
 const testresponse = settings.testresponse;
 const selfilesext = settings.selfilesext;
+const conOutput = settings.conOutput;
 //End of Settings
 
 //File Extensions
 var filesext = []
 const vidext = ['.mp4', '.mkv', '.flv', '.webm','.avi','.wmv','.mgp','.mpeg'];
 const audext = ['.mp3', '.mka', '.flac', '.wav', '.aac', '.ogg', '.mp2', '.ac3'];
-if (selfilesext === 'all'){
+if (selfilesext === 'both'){
   filesext = vidext.concat(audext);
 } else if (selfilesext === 'audio') {
   filesext = audext;
@@ -67,12 +68,12 @@ mdirs.forEach(function(mdir){
     if(debugOutput){console.log('Lista de archivos:')}
     var i=0;
     archivos.forEach(function (archivo){
-      if (archivo.substr(-4).startsWith('.'))
+      var ext = path.extname(archivo.toLowerCase());
+      var basesong = path.basename(archivo.toLowerCase(), ext);
+      if (ext.startsWith('.'))
       {
         filesext.forEach(function(searchext){
-          var ext = path.extname(archivo);
-          var basesong = path.basename(archivo, ext);
-          if (searchext == ext){
+          if (searchext.toLowerCase() == ext){
             songfiles.push(archivo);
             if(debugOutput){console.log(`[${i+1}]. ${basesong}`);}
             var songjson = {
@@ -139,7 +140,7 @@ function mensaje (channel, tags, msg, self) {
   //Test Command
   if(comando === `${suffix}${testcmnd}`) {
     comandos(comando);
-    if (chatOutput){client.say(channel, `${testresponse} @${tags.username}`);}
+    if (chatOutput && conOutput){client.say(channel, `${testresponse} @${tags.username}`);}
     console.log(`* ${tags.username} ${testcmnd} ${testresponse}`);
   };
 
@@ -177,7 +178,24 @@ function mensaje (channel, tags, msg, self) {
 
   if (comando.startsWith(`${suffix}play `)) {
     comandos(comando);
-    var busqueda = comando.substr(6);
+    // Pending selection check
+    if (decisiones.length >= 1){
+      console.log('Pending selection check')
+      decisiones.forEach(function(decision, i){
+        if (decision.username == tags.username){
+          console.log(`Pending selection for @${decision.username}:`)
+          console.log(`Pending selection for @${decision.opciones}`)
+
+          if (chatOutput){
+            client.say(channel, `@${tags.username} Tienes una cancion pendiente por elegir.`);
+            client.say(channel, `@${tags.username} hay varios resultados para  "${decision.busqueda}": ${decision.opciones}\n. Cual desea reproducir?`);
+          }
+        return;
+        }
+      })
+    }
+    else {
+      var busqueda = comando.substr(6);
     if (busqueda == '' || busqueda == ' ') {
       if (chatOutput){client.say(channel, `@${tags.username} no has especificado que deseas reproducir, intenta nuevamente.`);}
       console.log(`* ${tags.username} dejo el comando play vacio.`);
@@ -198,9 +216,7 @@ function mensaje (channel, tags, msg, self) {
     if (resultados.length == 0 || resultados === undefined) {
       if (chatOutput){client.say(channel, `@${tags.username} no se encontraron resultados para "${busqueda}".`);}
       console.log(`* ${tags.username} busco "${busqueda}" sin resultados.`);
-    }
-
-    if (resultados.length == 1) {
+    } else if (resultados.length == 1) {
       songsjson.forEach(function(song){
         if (song.name+song.extension == resultados[0]){
           addtoqueue(song);
@@ -209,9 +225,7 @@ function mensaje (channel, tags, msg, self) {
     var ext = path.extname(resultados[0]);
     if (chatOutput){client.say(channel, `@${tags.username} ha añadido ${path.basename(resultados[0], ext)} a la cola.`);}
     console.log(`* ${tags.username} añadio ${path.basename(resultados[0], ext)}" a la cola.`);
-    }
-
-    if (resultados.length > 1) {
+  } else if (resultados.length > 1) {
       var opciones = '';
       resultados.forEach(function(cancion, i){
         var ext = path.extname(cancion);
@@ -229,5 +243,11 @@ function mensaje (channel, tags, msg, self) {
     if (chatOutput){client.say(channel, `@${tags.username} hay varios resultados para  "${busqueda}": ${opciones}\n. Cual desea reproducir?`);}
     console.log(`* ${tags.username} busco "${busqueda}" con varios resultados.`);
     }
+    else {
+      if (debugOutput) {
+        console.log('Error')
+      }
+    }}
+    return;
   }
 };

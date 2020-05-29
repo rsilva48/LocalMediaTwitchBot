@@ -22,6 +22,7 @@ set.testresponse = 'pong!'; //Change the message send as a response to the test 
 set.selfilesext = 'both' //To select which files search, can be: both, audio, video.
 //Set startup messages to be send when connected.
 set.conmsg = [`Greetings, ${botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${prefix}play" then the name of the file.`];
+set.npmsg = 'Now Playing'; //Message to be send in queue for the now playing file.
 set.nqmsg = 'Next in queue'; //Message to be send in queue for next the file in queue.
 set.epmsg = 'you didn\'t specify what to play, try again.' //Message to be send when play command is sent empty
 

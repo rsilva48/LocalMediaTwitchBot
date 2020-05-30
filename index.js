@@ -1,33 +1,16 @@
-const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), { getAudioDurationInSeconds } = require('get-audio-duration')
+const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), { getAudioDurationInSeconds } = require('get-audio-duration'), moment = require('moment');
 
-var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [];
+var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true;
 
-//Import Settings from settings.js
-const settings = require(process.cwd() + '/settings.js');
-const mp = settings.set.mp;
-const mdirs = settings.set.mdirs;
-const channelname = settings.set.channelname;
-const botUsername = settings.set.botUsername;
-const oauthpass = settings.set.oauthpass
-const chatOutput = settings.set.chatOutput;
-const debugOutput = settings.set.debugOutput;
-const decisionDebug = settings.set.decisionDebug;
-const searchDebug = settings.set.searchDebug;
-const conmsg = settings.set.conmsg;
-const ignorebot = settings.set.conmsg;
-const prefix = settings.set.prefix;
-const testcmd = settings.set.testcmd;
-const testresponse = settings.set.testresponse;
-const selfilesext = settings.set.selfilesext;
-const conOutput = settings.set.conOutput;
-const npmsg = settings.set.npmsg;
-const nqmsg = settings.set.nqmsg;
-const playcmd = settings.set.playcmd;
-const queuecmd = settings.set.queuecmd;
-const epmsg = settings.set.epmsg;
-//End of Settings
+//Import Settings from settings.js.
+const settings = require(process.cwd() + '/settings.js'), mp = settings.set.mp, mdirs = settings.set.mdirs, channelname = settings.set.channelname, botUsername = settings.set.botUsername;
+const oauthpass = settings.set.oauthpass, chatOutput = settings.set.chatOutput, debugOutput = settings.set.debugOutput, decisionDebug = settings.set.decisionDebug, searchDebug = settings.set.searchDebug;
+const conmsg = settings.set.conmsg, ignorebot = settings.set.conmsg, prefix = settings.set.prefix, testcmd = settings.set.testcmd, testresponse = settings.set.testresponse, selfilesext = settings.set.selfilesext;
+const conOutput = settings.set.conOutput, npmsg = settings.set.npmsg, nqmsg = settings.set.nqmsg, playcmd = settings.set.playcmd, queuecmd = settings.set.queuecmd, epmsg = settings.set.epmsg, npcmd = settings.set.npcmd;
+const helpcmd = settings.set.helpcmd, infocmd = settings.set.infocmd, stopcmd = settings.set.stopcmd, resumecmd = settings.set.resumecmd, stopmsg = settings.set.stopmsg, resumemsg = settings.set.resumemsg; eqmsg = settings.set.eqmsg;
+//End of Settings.
 
-//File Extensions
+//File Extensions.
 var filesext = []
 const vidext = ['.mp4', '.mkv', '.flv', '.webm', '.avi', '.wmv', '.mgp', '.mpeg'];
 const audext = ['.mp3', '.mka', '.flac', '.wav', '.aac', '.ogg', '.mp2', '.ac3'];
@@ -42,7 +25,7 @@ if (selfilesext === 'both') {
 }
 
 
-//TMI Settings
+//TMI Settings.
 const options = {
   options: {
     debug: debugOutput,
@@ -58,17 +41,20 @@ const options = {
   channels: [channelname],
 };
 
-//Create TMI Client
+//Create TMI Client.
 const client = new tmi.client(options);
 
+//Console output function.
 function con(output) {
   if (conOutput) { console.log(output) };
 }
+
+//Debug console output function.
 function debug(output) {
-  if (debugOutput) { console.log(output) }
+  if (debugOutput) { console.log(output) };
 }
 
-//Scans each Media Directory
+//Scans each Media Directory.
 con('Indexing files...')
 debug('Lista de archivos:');
 mdirs.forEach(function (mdir) {
@@ -110,7 +96,7 @@ mdirs.forEach(function (mdir) {
 })
 con('Files indexed.')
 
-//Add selected file to the player queue
+//Add selected file to the player queue.
 function addtoqueue(filejson) {
   queue.push(filejson);
   //Media Player Commands
@@ -127,13 +113,13 @@ function addtoqueue(filejson) {
   }
 };
 
-//Set functions for message and connection
+//Set functions for message and connection.
 client.on('message', message);
 client.on('connected', connected);
 //Establish connection
 client.connect();
 
-//Connected function
+//Connected function.
 function connected(address, port) {
   conmsg.forEach(function (msg) {
     if (chatOutput) { client.action(channelname, msg); }
@@ -141,7 +127,7 @@ function connected(address, port) {
 };
 
 
-//Message function
+//Message function.
 function message(channel, tags, msg, self) {
   //Ignore Bot own messages
   if (ignorebot) {
@@ -154,19 +140,20 @@ function message(channel, tags, msg, self) {
   //Gets the messages of the chat and turn it to lower case to be then processed.
   const comando = msg.trim().toLowerCase();
 
-  //Command output function
+  //Command output function.
   function comandos(comando) {
     console.log(`* Command: ${comando}`);
   };
 
-  //Function to send a message in chat
+  //Function to send a message in chat.
   function chat(message) {
     if (chatOutput) {
       client.say(channel, message);
     }
   }
 
-  function searchsong() {
+  //Function that searches for the play command.
+  function search() {
     var busqueda = comando.substr(6);
     if (busqueda == '' || busqueda == ' ') {
       chat(`@${tags.username} ${epmsg}`);
@@ -224,33 +211,52 @@ function message(channel, tags, msg, self) {
     }
   }
 
-  //Test Command
+  //Test Command.
   if (comando === `${prefix}${testcmd}`) {
     comandos(comando);
     chat(`${testresponse} @${tags.username}`);
-    con(`* ${tags.username} ${testcmnd} ${testresponse}`);
-  };
-
-  //Queue Command
-  if (comando === `${prefix}${queuecmd}`) {
-    debug(queue);
-    var qchat = ''
-    queue.forEach(function (qsong, qc) {
-      if (qc == 0) {
-        qchat += (`${npmsg}: ${qsong.name}`)
-      }
-      else if (qc == 1) {
-        qchat += (`, ${nqmsg}: [${qc}]. ${qsong.name}`)
-      }
-      else {
-        qchat += (`, [${qc}]. ${qsong.name}`)
-      }
-    })
-    chat(qchat);
+    con(`* ${tags.username} ${testcmd} ${testresponse}`);
   }
 
-  //Decision selection
-  if (decisiones.length >= 1 && !comando.startsWith(`${prefix}${playcmd} `)) {
+  //Stop Command.
+  if (comando === prefix + stopcmd && requests === true && channelname.toLowerCase() === tags.username.toLowerCase()) {
+    requests = false;
+    chat(stopmsg);
+    con(stopmsg);
+  }
+
+  //Resume Command.
+  if (comando === prefix + resumecmd && requests === false && channelname.toLowerCase() === tags.username.toLowerCase()) {
+    requests = true;
+    chat(resumemsg);
+    con(resumemsg);
+  }
+
+  //Queue Command.
+  if (comando === prefix + queuecmd || comando === prefix + npcmd) {
+    debug(queue);
+    var qchat = ''
+    if (queue.length === 0) {
+      chat(`${eqmsg}`);
+    }
+    else {
+      queue.forEach(function (qsong, qc) {
+        if (qc == 0) {
+          qchat += (`${npmsg}: ${qsong.name}`)
+        }
+        else if (qc == 1 && comando != prefix + npcmd) {
+          qchat += (`, ${nqmsg}: [${qc}]. ${qsong.name}`)
+        }
+        else if (comando != prefix + npcmd) {
+          qchat += (`, [${qc}]. ${qsong.name}`)
+        }
+      })
+      chat(qchat);
+    }
+  }
+
+  //Decision selection.
+  if (decisiones.length >= 1 && !comando.startsWith(prefix + playcmd + ' ')) {
     if (decisionDebug) {
       console.log('\n* Decisiones length:');
       con(decisiones.length);
@@ -295,9 +301,9 @@ function message(channel, tags, msg, self) {
       }
     })
   }
-  else if (comando.startsWith(`${prefix}${playcmd} `)) {
+  else if (comando.startsWith(prefix + playcmd + ' ')) {
     comandos(comando);
-    // Pending selection check
+    // Pending selection check.
     if (decisiones.length >= 1) {
       con('Pending selection check')
       var matches = 0;
@@ -312,11 +318,11 @@ function message(channel, tags, msg, self) {
           }
         }
       })
-      if (matches == 0) {
-        searchsong();
+      if (matches === 0 && requests === true) {
+        search();
       }
-    } else {
-      searchsong();
+    } else if (requests === true) {
+      search();
     }
     return;
   }

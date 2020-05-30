@@ -3,7 +3,7 @@ Twitch Bot that adds files that are locally stored on a drive to a media player 
 
 Supported players: MPC-HC and PotPlayer.
 
-## Installation & use
+## Installation
 
 ### Downloading releases
 
@@ -14,14 +14,13 @@ Supported players: MPC-HC and PotPlayer.
 
 * Extract the .zip file and modify **settings.js**.
 
-* Then just run the executable file.
 
+### Downloading source code
+* Clone the repo or download it as a zip and extract it.
 
-### Using source code
+* Install Node.js, you can get it here: https://nodejs.org/.
 
-* First, install Node.js, you can get it here: https://nodejs.org/.
-
-* Then modify the **settingstemplate.js** and save it as **settings.js**.
+* Modify the **settingstemplate.js** and save it as **settings.js**.
 
 
 To install the dependencies use the following command on the CLI:
@@ -29,16 +28,30 @@ To install the dependencies use the following command on the CLI:
 npm install
 ```
 
+## How to use
 
-To run the bot use the following command on the CLI:
+### Using release executable
+
+Run the **localmediatwitchbot-**_platfform_ executable after the configuration of **settings.js**.
+
+
+### Using source code
+
+To run the bot use the following command on the CLI after the configuration of **settings.js**:
 ```
 node index.js
 ```
 
 ### Commands
 
+All of these commands can be edited in settings.js.
+
 * **!play** - To add a file to the queue use the command followed by the name of the file.
-* **!ping** - Test command that returns pong! to the chat, can be changed in settings.js file.
+* **!ping** - Test command that returns pong! to the chat by default.
+* **!queue** - Show a list of files in queue. **WIP**
+* **!np** - Show now playing file. **WIP**
+* **!stop** - Allows channel owner to disable requests from play command.
+* **!resume** - Allows channel owner to enable requests from play command.
 
 Example:
 ```

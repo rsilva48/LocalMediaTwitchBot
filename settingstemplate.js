@@ -1,4 +1,4 @@
-var set={};
+var set = {};
 //Edit the configuration file and rename this file to settings.js if it have other name.
 
 //Media settings
@@ -17,24 +17,32 @@ set.chatOutput = true; //Enables or disable the bot output on the chat.
 set.conOutput = true; //Enable or disables connection messages on chat.
 set.ignorebot = false; //Enable or disables if the messages sent by the bot are ignored.
 
-//Personalization
-set.testresponse = 'pong!'; //Change the message send as a response to the test command
-set.selfilesext = 'both' //To select which files search, can be: both, audio, video.
-//Set startup messages to be send when connected.
-set.conmsg = [`Greetings, ${botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${prefix}play" then the name of the file.`];
-set.npmsg = 'Now Playing'; //Message to be send in queue for the now playing file.
-set.nqmsg = 'Next in queue'; //Message to be send in queue for next the file in queue.
-set.epmsg = 'you didn\'t specify what to play, try again.' //Message to be send when play command is sent empty
-
 //Commands
 set.prefix = '!'; //Change the prefix for the commands, by defaut they start with !
 set.playcmd = 'play'; //Command for playing files.
+set.npcmd = 'np'; //Now playing command.
 set.queuecmd = 'queue'; //Command for show list of files in queue.
-set.testcmd = 'ping'; //Change the test command
+set.creditscmd = 'info'; //Command that show bot info.
+set.helpmcmd = 'help'; //Comand that shows help.
+set.testcmd = 'ping'; //Change the test command.
+set.stopcmd = 'stop'; //Stop receiving requests from play command.
+set.resumecmd = 'resume'; //Resume receiving request from play command.
+
+//Personalization
+set.testresponse = 'pong!'; //Change the message send as a response to the test command.
+set.selfilesext = 'both'; //To select which files search, can be: both, audio, video.
+//Set startup messages to be send when connected.
+set.conmsg = [`Greetings, ${set.botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${set.prefix}play" then the name of the file.`];
+set.npmsg = 'Now Playing'; //Message to be send in queue for the now playing file.
+set.nqmsg = 'Next in queue'; //Message to be send in queue for next the file in queue.
+set.epmsg = 'you didn\'t specify what to play, try again.'; //Message to be send when play command is sent empty.
+set.eqmsg = 'There\'s nothing in the queue.'; //Empty queue message 
+set.stopmsg = 'Requests have been disabled.'; //Message to be send when requests are disabled.
+set.resumemsg = 'Requests have been reenabled.'; //Message to be send when request is reenabled.
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.
 set.decisionDebug = false; //Enables or disable the bot debug output on console related to the decisions when bot returns multiple results.
 set.searchDebug = false; //Enables or disable the bot debug output on console related to the file search results.
 
-module.exports={set}
+export default { set }

@@ -12,10 +12,11 @@ set.mdirs = ["C:\\Users\\Harunoki__48\\Videos\\", "C:\\Users\\Harunoki__48\\Musi
 //Bot settings
 set.channelname = 'H48Bot'; //Twitch.tv channel name.
 set.botUsername = 'H48Bot'; //Twitch bot account username.
-set.oauthpass = 'oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; //Generate oauthpass here: https://twitchapps.com/tmi/
+set.oauthpass = 'oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; //Generate oauth here: https://twitchapps.com/tmi/
 set.chatOutput = true; //Enables or disable the bot output on the chat.
 set.conOutput = true; //Enable or disables connection messages on chat.
 set.ignorebot = false; //Enable or disables if the messages sent by the bot are ignored.
+set.lang = 'en' //Sets help language. Can be en or es
 
 //Commands
 set.prefix = '!'; //Change the prefix for the commands, by defaut they start with !
@@ -27,7 +28,7 @@ set.helpcmd = 'help'; //Comand that shows help.
 set.testcmd = 'ping'; //Change the test command.
 set.stopcmd = 'stop'; //Stop receiving requests from play command.
 set.resumecmd = 'resume'; //Resume receiving request from play command.
-set.resetlimitcmd = 'reset'; //Reset request limit counter.
+set.resetrccmd = 'reset'; //Reset request counter.
 set.requestscmd = 'requests'; //See how many requests the user have used, and how many remain.
 
 //Personalization
@@ -44,21 +45,23 @@ set.eqmsg = 'There\'s nothing in the queue.'; //Empty queue message
 set.stopmsg = 'Requests have been disabled.'; //Message to be send when requests are disabled.
 set.resumemsg = 'Requests have been reenabled.'; //Message to be send when request is reenabled.
 set.chatsrchnf = 'no results found for'; //Message to be send in chat when no results were found to a play command.
-set.results = 'Results:';
 set.atq = 'added to the queue:'; //Message to be send when a file was added to the queue.
 set.chatrs = ["there\'s many results for", "Which one do you want to play? To cancel the search send"]; //Message to be send when there's a results selection.
 set.chatcsrch = 'you have canceled your search.'; //Message to be send in chat when user cancel a search.
 set.psmsg = 'you have a pending selection'; //Message to be send when there's a pending selection.
-set.rmmsg = ['you have requested', 'times.', 'you have', 'requests left.']; //Messages to be send when user ask for how many requests have been done.
+set.rmmsg = ['you have requested', 'times.', 'you have', 'requests left.', 'time', 'You have reached the limit.']; //Messages to be send when user ask for how many requests have been done.
 set.nrqmsg = 'you haven\t done any requests.' //Message to be send when there's no request done by the user
+set.rlimitrmsg = 'you have reached the requests limit.' //Message to be send when the user reached the requests limit.
+set.resetrcmsg = 'Request counter have been resetted.' //Message to be sent when requests counter is resetted.
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.
 set.decisionDebug = false; //Enables or disable the bot debug output on console related to the decisions when bot returns multiple results.
 set.searchDebug = false; //Enables or disable the bot debug output on console related to the file search results.
 set.conepmsg = 'sent play command empty.'; //Message to be displayed in console when play command is sent empty
-set.consrchnf = 'didnt found results for'; //Message to be displayed on console when no results were found to a play command
+set.consrchnf = 'didnt found results for'; //Message to be displayed in console when no results were found to a play command
 set.conrs = ["searched", "with many results."]; //Message to be send when there's a results selection.
-set.concsrch = 'canceled the search.'; //Message to be send in chat when user cancel a search.
+set.concsrch = 'canceled the search.'; //Message to be displayed in console when user cancel a search.
+set.results = 'Results:'; //Message to be displayed on console when a user searches using play
 
 module.exports = set;

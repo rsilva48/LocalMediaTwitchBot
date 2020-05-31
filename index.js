@@ -1,6 +1,6 @@
 const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), { getAudioDurationInSeconds } = require('get-audio-duration'), moment = require('moment');
 
-var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [];
+var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [], urcount = 0;
 
 //Import Settings from settings.js.
 const set = require(process.cwd() + '/settings'), helpmsg = require(process.cwd() + '/help');
@@ -139,6 +139,8 @@ function connected(address, port) {
 
 //Message function.
 function message(channel, tags, msg, self) {
+  //Resets user request count
+  urcount = 0;
   //Ignore Bot own messages
   if (set.ignorebot) {
     if (self) { return; }
@@ -148,7 +150,7 @@ function message(channel, tags, msg, self) {
   }
 
   //Log chat to chatlog,txt
-  fs.appendFileSync(process.cwd() + '/chatlog.txt', msg, "UTF-8", { 'flags': 'a+' });
+  fs.appendFileSync(process.cwd() + '/chatlog.txt', msg + '\n', "UTF-8", { 'flags': 'a+' });
 
   //Gets the messages of the chat and turn it to lower case to be then processed.
   const comando = msg.trim().toLowerCase();
@@ -241,8 +243,8 @@ function message(channel, tags, msg, self) {
   //Resume Command.
   if (comando === set.prefix + set.resumecmd && requests === false && set.channelname.toLowerCase() === tags.username.toLowerCase()) {
     requests = true;
-    chat(resumemsg);
-    con(resumemsg);
+    chat(set.resumemsg);
+    con(set.resumemsg);
   }
 
   //Queue Command.
@@ -257,10 +259,10 @@ function message(channel, tags, msg, self) {
         if (qc == 0) {
           qchat += (`${set.npmsg}: ${qsong.name}`)
         }
-        else if (qc == 1 && comando != prefix + npcmd) {
+        else if (qc == 1 && comando != set.prefix + set.npcmd) {
           qchat += (`, ${set.nqmsg}: [${qc}]. ${qsong.name}`)
         }
-        else if (comando != prefix + npcmd) {
+        else if (comando != set.prefix + set.npcmd) {
           qchat += (`, [${qc}]. ${qsong.name}`)
         }
       })
@@ -273,13 +275,27 @@ function message(channel, tags, msg, self) {
     chat(helpmsg);
   }
 
+  //Reset Limit Command
+  if (comando === set.prefix + set.resetrccmd && set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+    rcount = [];
+    chat(set.resetrcmsg);
+  }
+
   //Requests Command
   if (comando === set.prefix + set.requestscmd) {
     var matches = 0;
     rcount.forEach(function (rq) {
       if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
-        chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
         matches++;
+        if (rq.count === 1) {
+          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[4]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
+        }
+        else if (rq.count === set.rlimit) {
+          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[5]}`);
+        }
+        else {
+          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
+        }
       }
     })
     if (matches === 0) {
@@ -287,9 +303,18 @@ function message(channel, tags, msg, self) {
     }
   }
 
+  //Set user request count urcount variable
+  if (comando.startsWith(set.prefix + set.playcmd + ' ')) {
+    rcount.forEach(function (rq) {
+      if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
+        urcount = rq.count;
+      }
+    })
+  }
+
   //Decision selection.
   if (decisiones.length >= 1 && !comando.startsWith(set.prefix + set.playcmd + ' ')) {
-    if (decisionDebug) {
+    if (set.decisionDebug) {
       console.log('\n* Decisiones length:');
       con(decisiones.length);
       con('Seleccion:')
@@ -318,8 +343,8 @@ function message(channel, tags, msg, self) {
               }
             })
             var ext = path.extname(elecciones);
-            chat(`@${tags.username} ${set.atq} "${path.basename(resultados[0], ext)}"`);
-            con(`* ${tags.username} ${set.atq} "${path.basename(resultados[0], ext)}"`);
+            chat(`@${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
+            con(`* ${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
           }
           if (set.decisionDebug) {
             console.log('Busqueda');
@@ -350,11 +375,17 @@ function message(channel, tags, msg, self) {
           }
         }
       })
-      if (matches === 0 && requests === true) {
+      if (matches === 0 && requests === true  && urcount < set.rlimit) {
         search();
       }
-    } else if (requests === true) {
+    } else if (requests === true  && urcount < set.rlimit) {
       search();
+    }
+    else if (requests === false) {
+      chat(`@${tags.username} ` + set.stopmsg);
+    }
+    else {
+      chat(`@${tags.username} ` + set.rlimitrmsg);
     }
     return;
   }

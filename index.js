@@ -1,6 +1,6 @@
 const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), { getAudioDurationInSeconds } = require('get-audio-duration'), moment = require('moment');
 
-var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true;
+var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [];
 
 //Import Settings from settings.js.
 const settings = require(process.cwd() + '/settings.js'), mp = settings.set.mp, mdirs = settings.set.mdirs, channelname = settings.set.channelname, botUsername = settings.set.botUsername;
@@ -97,7 +97,13 @@ mdirs.forEach(function (mdir) {
 con('Files indexed.')
 
 //Add selected file to the player queue.
-function addtoqueue(filejson) {
+function addtoqueue(filejson, username) {
+  rqc.username = username;
+  rqc.forEach(function{
+    var rqc = {};
+    if (rcount.username == )
+  })
+  if (rcount.username == )
   queue.push(filejson);
   //Media Player Commands
   var pp = `"${mp}" "${filejson.fullpath}" /add`;
@@ -178,7 +184,7 @@ function message(channel, tags, msg, self) {
     } else if (resultados.length == 1) {
       songsjson.forEach(function (songjson) {
         if (songjson.name + songjson.extension == resultados[0]) {
-          addtoqueue(songjson);
+          addtoqueue(songjson, tags.username);
           var ext = path.extname(resultados[0]);
           chat(`@${tags.username} ha añadido ${path.basename(resultados[0], ext)} a la cola.`);
           con(`* ${tags.username} añadio ${path.basename(resultados[0], ext)}" a la cola.`);
@@ -282,7 +288,7 @@ function message(channel, tags, msg, self) {
           if (comando == j + 1) {
             songsjson.forEach(function (song) {
               if (song.name + song.extension == elecciones) {
-                addtoqueue(song);
+                addtoqueue(song, tags.username);
               }
             })
             var ext = path.extname(elecciones);

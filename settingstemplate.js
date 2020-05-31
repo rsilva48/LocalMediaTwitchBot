@@ -23,26 +23,42 @@ set.playcmd = 'play'; //Command for playing files.
 set.npcmd = 'np'; //Now playing command.
 set.queuecmd = 'queue'; //Command for show list of files in queue.
 set.creditscmd = 'info'; //Command that show bot info.
-set.helpmcmd = 'help'; //Comand that shows help.
+set.helpcmd = 'help'; //Comand that shows help.
 set.testcmd = 'ping'; //Change the test command.
 set.stopcmd = 'stop'; //Stop receiving requests from play command.
 set.resumecmd = 'resume'; //Resume receiving request from play command.
+set.resetlimitcmd = 'reset'; //Reset request limit counter.
+set.requestscmd = 'requests'; //See how many requests the user have used, and how many remain.
 
 //Personalization
 set.testresponse = 'pong!'; //Change the message send as a response to the test command.
 set.selfilesext = 'both'; //To select which files search, can be: both, audio, video.
+set.rlimit = 3; //Set request limit per user.
+set.csrh = "0"; //Set what message to be send to cancel a search.
 //Set startup messages to be send when connected.
-set.conmsg = [`Greetings, ${set.botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${set.prefix}play" then the name of the file.`];
+set.cnnmsg = [`Greetings, ${set.botUsername} is connected, created by @Harunoki__48.`, `To add a file to the queue use the command "${set.prefix}play" then the name of the file.`];
 set.npmsg = 'Now Playing'; //Message to be send in queue for the now playing file.
 set.nqmsg = 'Next in queue'; //Message to be send in queue for next the file in queue.
-set.epmsg = 'you didn\'t specify what to play, try again.'; //Message to be send when play command is sent empty.
+set.chatepmsg = 'you didn\'t specify what to play, try again.'; //Message to be send in chat when play command is sent empty.
 set.eqmsg = 'There\'s nothing in the queue.'; //Empty queue message 
 set.stopmsg = 'Requests have been disabled.'; //Message to be send when requests are disabled.
 set.resumemsg = 'Requests have been reenabled.'; //Message to be send when request is reenabled.
+set.chatsrchnf = 'no results found for'; //Message to be send in chat when no results were found to a play command.
+set.results = 'Results:';
+set.atq = 'added to the queue:'; //Message to be send when a file was added to the queue.
+set.chatrs = ["there\'s many results for", "Which one do you want to play? To cancel the search send"]; //Message to be send when there's a results selection.
+set.chatcsrch = 'you have canceled your search.'; //Message to be send in chat when user cancel a search.
+set.psmsg = 'you have a pending selection'; //Message to be send when there's a pending selection.
+set.rmmsg = ['you have requested', 'times.', 'you have', 'requests left.']; //Messages to be send when user ask for how many requests have been done.
+set.nrqmsg = 'you haven\t done any requests.' //Message to be send when there's no request done by the user
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.
 set.decisionDebug = false; //Enables or disable the bot debug output on console related to the decisions when bot returns multiple results.
 set.searchDebug = false; //Enables or disable the bot debug output on console related to the file search results.
+set.conepmsg = 'sent play command empty.'; //Message to be displayed in console when play command is sent empty
+set.consrchnf = 'didnt found results for'; //Message to be displayed on console when no results were found to a play command
+set.conrs = ["searched", "with many results."]; //Message to be send when there's a results selection.
+set.concsrch = 'canceled the search.'; //Message to be send in chat when user cancel a search.
 
-export default { set }
+module.exports = set;

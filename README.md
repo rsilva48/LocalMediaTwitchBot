@@ -52,6 +52,7 @@ All of these commands can be edited in settings.js.
 * **!np** - Show now playing file. **WIP**
 * **!stop** - Allows channel owner to disable requests from play command.
 * **!resume** - Allows channel owner to enable requests from play command.
+* **!reset** - Allows the channel owner to reset the requests count.
 
 Example:
 ```

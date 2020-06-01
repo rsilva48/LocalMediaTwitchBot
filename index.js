@@ -64,7 +64,7 @@ set.mdirs.forEach(function (mdir) {
         filesext.forEach(function (searchext) {
           if (searchext.toLowerCase() == ext.toLowerCase()) {
             songfiles.push(archivo);
-            getVideoDurationInSeconds(`${mdir}${basesong}${ext}`).then(function (duration) {
+            getVideoDurationInSeconds(`${mdir}${basesong}${ext}`).then((duration) => {
               var songjson = {
                 id: i,
                 name: basesong,

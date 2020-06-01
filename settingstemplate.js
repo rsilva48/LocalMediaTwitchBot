@@ -15,7 +15,7 @@ set.botUsername = 'H48Bot'; //Twitch bot account username.
 set.oauthpass = 'oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; //Generate oauth here: https://twitchapps.com/tmi/
 set.chatOutput = true; //Enables or disable the bot output on the chat.
 set.conOutput = true; //Enable or disables connection messages on chat.
-set.ignorebot = false; //Enable or disables if the messages sent by the bot are ignored.
+set.ignorebot = true; //Enable or disables if the messages sent by the bot are ignored.
 set.lang = 'en' //Sets help language. Can be en or es
 
 //Commands
@@ -30,6 +30,7 @@ set.stopcmd = 'stop'; //Stop receiving requests from play command.
 set.resumecmd = 'resume'; //Resume receiving request from play command.
 set.resetrccmd = 'reset'; //Reset request counter.
 set.requestscmd = 'requests'; //See how many requests the user have used, and how many remain.
+set.rmvcmd = 'remove'; //Remove song from queue.
 
 //Personalization
 set.testresponse = 'pong!'; //Change the message send as a response to the test command.
@@ -53,6 +54,8 @@ set.rmmsg = ['you have requested', 'times.', 'you have', 'requests left.', 'time
 set.nrqmsg = 'you haven\t done any requests.' //Message to be send when there's no request done by the user
 set.rlimitrmsg = 'you have reached the requests limit.' //Message to be send when the user reached the requests limit.
 set.resetrcmsg = 'Request counter have been resetted.' //Message to be sent when requests counter is resetted.
+set.ownnerrlmsg = 'You\'re the owner of the channel you don\'t have limits.' //Message to be send when the channel owner uses the request command.
+set.botignmsg = 'Bot messages are being ignored.' //Message to be displayed in console when bot messages are being ignored.
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.

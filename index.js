@@ -1,9 +1,9 @@
-const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), { getAudioDurationInSeconds } = require('get-audio-duration'), moment = require('moment');
+const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), moment = require('moment'), { getVideoDurationInSeconds } = require('get-video-duration');
 
 var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [], urcount = 0;
 
 //Import Settings from settings.js.
-const set = require(process.cwd() + '/settings'), helpmsg = require(process.cwd() + '/help');
+const set = require(process.cwd() + '/settings.js'), helpmsg = require('./help.js');
 
 //File Extensions.
 var filesext = []
@@ -64,7 +64,7 @@ set.mdirs.forEach(function (mdir) {
         filesext.forEach(function (searchext) {
           if (searchext.toLowerCase() == ext.toLowerCase()) {
             songfiles.push(archivo);
-            getAudioDurationInSeconds(`${mdir}${basesong}${ext}`).then((duration) => {
+            getVideoDurationInSeconds(`${mdir}${basesong}${ext}`).then(function (duration) {
               var songjson = {
                 id: i,
                 name: basesong,
@@ -72,9 +72,9 @@ set.mdirs.forEach(function (mdir) {
                 dir: mdir,
                 fullpath: mdir + basesong + ext,
                 duration: duration
-              };
+              }
               songsjson.push(songjson);
-              debug('json:');
+              //debug('json:');
               debug(songjson);
             })
             debug(`[${i + 1}]. ${basesong}`);
@@ -96,7 +96,10 @@ function addtoqueue(filejson, username) {
   urqcount = 0;
   var urqc = {};
   rcount.forEach(function (rq) {
-    if (rq.username.toLowerCase() == username.toLowerCase()) {
+    if (set.channelname.toLowerCase() === username.toLowerCase()) {
+      urcount = 0;
+    }
+    else if (rq.username.toLowerCase() == username.toLowerCase()) {
       urqcount++;
       if (typeof rq.count == 'number' && rq.count !== 0) {
         rq.count++;
@@ -143,6 +146,7 @@ function message(channel, tags, msg, self) {
   urcount = 0;
   //Ignore Bot own messages
   if (set.ignorebot) {
+    con(set.botignmsg);
     if (self) { return; }
     if (tags.username == set.botUsername.toLowerCase()) {
       return;
@@ -284,36 +288,46 @@ function message(channel, tags, msg, self) {
   //Requests Command
   if (comando === set.prefix + set.requestscmd) {
     var matches = 0;
-    rcount.forEach(function (rq) {
-      if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
-        matches++;
-        if (rq.count === 1) {
-          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[4]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
+    if (set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+      chat(`@${tags.username} ${set.ownnerrlmsg}`);
+    }
+    else {
+      rcount.forEach(function (rq) {
+        if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
+          matches++;
+          if (rq.count === 1) {
+            chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[4]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
+          }
+          else if (rq.count === set.rlimit) {
+            chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[5]}`);
+          }
+          else {
+            chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
+          }
         }
-        else if (rq.count === set.rlimit) {
-          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[5]}`);
-        }
-        else {
-          chat(`@${tags.username} ${set.rmmsg[0]} ${rq.count} ${set.rmmsg[1]} ${set.rmmsg[2]} ${set.rlimit - rq.count} ${set.rmmsg[3]}`);
-        }
+      })
+      if (matches === 0) {
+        chat(`@${tags.username} ${set.nrqmsg} ${set.rmmsg[2]} ${set.rlimit} ${set.rmmsg[3]}`);
       }
-    })
-    if (matches === 0) {
-      chat(`@${tags.username} ${set.nrqmsg} ${set.rmmsg[2]} ${set.rlimit} ${set.rmmsg[3]}`);
     }
   }
 
   //Set user request count urcount variable
   if (comando.startsWith(set.prefix + set.playcmd + ' ')) {
-    rcount.forEach(function (rq) {
-      if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
-        urcount = rq.count;
-      }
-    })
+    if (set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+      urcount = 0;
+    }
+    else {
+      rcount.forEach(function (rq) {
+        if (rq.username.toLowerCase() === tags.username.toLowerCase()) {
+          urcount = rq.count;
+        }
+      })
+    }
   }
 
   //Decision selection.
-  if (decisiones.length >= 1 && !comando.startsWith(set.prefix + set.playcmd + ' ')) {
+  if (decisiones.length >= 1 && !comando.startsWith(set.prefix)) {
     if (set.decisionDebug) {
       console.log('\n* Decisiones length:');
       con(decisiones.length);
@@ -322,7 +336,7 @@ function message(channel, tags, msg, self) {
     decisiones.forEach(function (decision, i) {
       if (set.decisionDebug) { con(decision.username); }
       if (decision.username == tags.username) {
-        if (comando === set.csrh) {
+        if (comando == set.csrh) {
           chat(`@${tags.username} ${set.chatcsrch}`);
           con(`* ${tags.username} ${set.concsrch}`);
           if (set.decisionDebug) {
@@ -336,7 +350,7 @@ function message(channel, tags, msg, self) {
         }
         decision.opciones.forEach(function (elecciones, j) {
           if (set.decisionDebug) { console.log(j + ' ' + elecciones) }
-          if (comando == j + 1) {
+          if (comando == `${j + 1}`) {
             songsjson.forEach(function (song) {
               if (song.name + song.extension == elecciones) {
                 addtoqueue(song, tags.username);
@@ -345,15 +359,15 @@ function message(channel, tags, msg, self) {
             var ext = path.extname(elecciones);
             chat(`@${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
             con(`* ${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
+            //Erases the decision once fullfiled
+            decisiones = decisiones.filter(function (value, index, arr) {
+              return !(value.busqueda == decision.busqueda && value.username == decision.username);
+            })
           }
           if (set.decisionDebug) {
             console.log('Busqueda');
             con(decision.busqueda)
           }
-          //Erases the decision once fullfiled
-          decisiones = decisiones.filter(function (value, index, arr) {
-            return !(value.busqueda == decision.busqueda && value.username == decision.username);
-          })
         })
       }
     })
@@ -375,10 +389,10 @@ function message(channel, tags, msg, self) {
           }
         }
       })
-      if (matches === 0 && requests === true  && urcount < set.rlimit) {
+      if (matches === 0 && requests === true && urcount < set.rlimit) {
         search();
       }
-    } else if (requests === true  && urcount < set.rlimit) {
+    } else if (requests === true && urcount < set.rlimit) {
       search();
     }
     else if (requests === false) {

@@ -1,6 +1,8 @@
 # Local Media Twitch Bot
 Twitch Bot that adds files that are locally stored on a drive to a media player playlist or queue.
 
+Viewers can use commands to add files to the media player playlist, they're limited by default to a certain number of requests.
+
 Supported players: MPC-HC and PotPlayer.
 
 ## Installation
@@ -53,6 +55,8 @@ All of these commands can be edited in settings.js.
 * **!stop** - Allows channel owner to disable requests from play command.
 * **!resume** - Allows channel owner to enable requests from play command.
 * **!reset** - Allows the channel owner to reset the requests count.
+* **!unlimit** - Allows the channel owner to unlimit how many requests a viewer can do.
+* **!limit** - Allows the channel owner to limit how many requests a viewer can do.
 
 Example:
 ```

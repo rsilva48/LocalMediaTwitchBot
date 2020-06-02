@@ -31,6 +31,8 @@ set.resumecmd = 'resume'; //Resume receiving request from play command.
 set.resetrccmd = 'reset'; //Reset request counter.
 set.requestscmd = 'requests'; //See how many requests the user have used, and how many remain.
 set.rmvcmd = 'remove'; //Remove song from queue.
+set.unlrq = 'unlimit'; //Unlimit how many requests a user can do.
+set.lrq = 'limit'; //Limit how many requests a user can do.
 
 //Personalization
 set.testresponse = 'Hola!'; //Change the message send as a response to the test command
@@ -51,11 +53,15 @@ set.chatrs = ["hay varios resultados para", "¿Cual desea reproducir? Para cance
 set.chatcsrch = 'has cancelado tu busqueda.'; //Message to be send in chat when user cancel a search.
 set.psmsg = 'tienes una seleccion pendiente.'; //Message to be send when there's a pending selection.
 set.rmmsg = ['has pedido', 'veces.', 'tienes', 'peticiones restantes.', 'vez', 'Haz alcanzado el limite.']; //Messages to be send when user ask for how many requests have been done.
-set.nrqmsg = 'no has hecho ningun peticion.' //Message to be send when there's no request done by the user
+set.nrqmsg = 'no has hecho ninguna peticion.' //Message to be send when there's no request done by the user
 set.rlimitrmsg = 'has alcanzado el limite de peticiones.' //Message to be send when the user reached the requests limit.
 set.resetrcmsg = 'Se ha reiniciado el contador de peticiones.' //Message to be sent when requests counter is resetted.
 set.ownnerrlmsg = 'Eres el dueño del canal no tienes limites.' //Message to be send when the channel owner uses the request command.
 set.botignmsg = 'Los mensajes del bot estan siendo ignorados.' //Message to be displayed in console when bot messages are being ignored.
+set.ulusermsg = 'tus peticiones han sido ilimitadas.' //Message to be send when viewer use request command and owner unlimited number of requests for them.
+set.lusermsg = 'tus peticiones han sido limitadas.' //Message to be send when owner limited number of requests for a viewer.
+set.alusermsg = 'ya esta limitado.' //Message to be send when owner tries to limit number of requests for a already limited viewer.
+set.aulusermsg = 'ya esta ilimitado.' //Message to be send when owner tries to limit number of requests for a already unlimited viewer.
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.

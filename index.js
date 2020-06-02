@@ -1,6 +1,6 @@
 const tmi = require('tmi.js'), path = require('path'), fs = require('fs'), moment = require('moment'), { getVideoDurationInSeconds } = require('get-video-duration');
 
-var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [], urcount = 0;
+var songfiles = [], songnames = [], songsjson = [], decisiones = [], queue = [], requests = true, rcount = [], urcount = 0, ulusers = [], userlimited = true;
 
 //Import Settings from settings.js.
 const set = require(process.cwd() + '/settings.js'), helpmsg = require('./help.js');
@@ -92,11 +92,11 @@ set.mdirs.forEach(function (mdir) {
 con('Files indexed.')
 
 //Add selected file to the player queue.
-function addtoqueue(filejson, username) {
+function addtoqueue(filejson, username, limiteduser) {
   urqcount = 0;
   var urqc = {};
   rcount.forEach(function (rq) {
-    if (set.channelname.toLowerCase() === username.toLowerCase()) {
+    if (set.channelname.toLowerCase() === username.toLowerCase() || limiteduser === false) {
       urcount = 0;
     }
     else if (rq.username.toLowerCase() == username.toLowerCase()) {
@@ -142,8 +142,10 @@ function connected(address, port) {
 
 //Message function.
 function message(channel, tags, msg, self) {
-  //Resets user request count
+  //Reset user request count and if user is limited
   urcount = 0;
+  userlimited = true;
+
   //Ignore Bot own messages
   if (set.ignorebot) {
     con(set.botignmsg);
@@ -153,13 +155,13 @@ function message(channel, tags, msg, self) {
     };
   }
 
-  //Log chat to chatlog,txt
+  //Log chat to chatlog.txt
   fs.appendFileSync(process.cwd() + '/chatlog.txt', msg + '\n', "UTF-8", { 'flags': 'a+' });
 
   //Gets the messages of the chat and turn it to lower case to be then processed.
   const comando = msg.trim().toLowerCase();
 
-  //Command output function.
+  //Function to ouput commands in console.
   function comandos(comando) {
     console.log(`* Command: ${comando}`);
   };
@@ -173,7 +175,9 @@ function message(channel, tags, msg, self) {
 
   //Function that searches for the play command.
   function search() {
-    var busqueda = comando.substr(6);
+    debug((set.prefix + set.playcmd + ' ').length);
+    var busqueda = comando.substr((set.prefix + set.playcmd + ' ').length);
+    debug(busqueda);
     if (busqueda == '' || busqueda == ' ') {
       chat(`@${tags.username} ${set.chatepmsg}`);
       con(`* ${tags.username} ${set.conepmsg}`);
@@ -197,7 +201,7 @@ function message(channel, tags, msg, self) {
     } else if (resultados.length == 1) {
       songsjson.forEach(function (songjson) {
         if (songjson.name + songjson.extension == resultados[0]) {
-          addtoqueue(songjson, tags.username);
+          addtoqueue(songjson, tags.username, userlimited);
           var ext = path.extname(resultados[0]);
           chat(`@${tags.username} ${set.atq} "${path.basename(resultados[0], ext)}"`);
           con(`* ${tags.username} ${set.atq} "${path.basename(resultados[0], ext)}"`);
@@ -285,11 +289,23 @@ function message(channel, tags, msg, self) {
     chat(set.resetrcmsg);
   }
 
+  //Get if user is limited or not.
+  if ((comando.startsWith(set.prefix + set.playcmd + ' ') || comando === set.prefix + set.requestscmd)) {
+    ulusers.forEach(function (uluser) {
+      if (uluser.toLowerCase() === tags.username.toLowerCase()) {
+        userlimited = false;
+      }
+    })
+  }
+
   //Requests Command
   if (comando === set.prefix + set.requestscmd) {
     var matches = 0;
     if (set.channelname.toLowerCase() === tags.username.toLowerCase()) {
       chat(`@${tags.username} ${set.ownnerrlmsg}`);
+    }
+    else if (userlimited === false) {
+      chat(`@${tags.username} ${set.ulusermsg}`);
     }
     else {
       rcount.forEach(function (rq) {
@@ -312,9 +328,49 @@ function message(channel, tags, msg, self) {
     }
   }
 
-  //Set user request count urcount variable
+  //Unlimit Command
+  if (comando.startsWith(set.prefix + set.unlrq + ' @') && set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+    var ulusername = comando.substr((set.prefix + set.unlrq + ' @').length);
+    var vl = true;
+    ulusers.forEach(function (uluser) {
+      con(`'${uluser.toLowerCase()}' === '${lusername.toLowerCase()}'`)
+      if (uluser.toLowerCase() === ulusername.toLowerCase()) {
+        vl =  false;
+      }
+    })
+    if (vl === true) {
+      ulusers.push(ulusername);
+      chat(`@${ulusername} ${set.ulusermsg}`);
+    }
+    else {
+      chat(`@${ulusername} ${set.aulusermsg}`);
+    }
+  }
+
+  //Limit Command
+  if (comando.startsWith(set.prefix + set.lrq + ' @') && set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+    var lusername = comando.substr((set.prefix + set.lrq + ' @').length);
+    var vl = true;
+    ulusers.forEach(function (uluser) {
+      if (uluser.toLowerCase() === lusername.toLowerCase()) {
+        vl =  false;
+      }
+    })
+    if (vl === false) {
+      ulusers = ulusers.filter(function (uluser, index, arr) {
+        //Erases the user from ulusers
+        return !(uluser.toLowerCase() == lusername.toLowerCase());
+      })
+      chat(`@${lusername} ${set.lusermsg}`);
+    }
+    else {
+      chat(`@${lusername} ${set.alusermsg}`);
+    }
+  }
+
+  //Set user request count to urcount variable
   if (comando.startsWith(set.prefix + set.playcmd + ' ')) {
-    if (set.channelname.toLowerCase() === tags.username.toLowerCase()) {
+    if ((set.channelname.toLowerCase() === tags.username.toLowerCase()) || userlimited === false) {
       urcount = 0;
     }
     else {
@@ -353,15 +409,15 @@ function message(channel, tags, msg, self) {
           if (comando == `${j + 1}`) {
             songsjson.forEach(function (song) {
               if (song.name + song.extension == elecciones) {
-                addtoqueue(song, tags.username);
+                addtoqueue(song, tags.username, userlimited);
+                var ext = path.extname(elecciones);
+                chat(`@${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
+                con(`* ${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
+                //Erases the decision once fullfiled
+                decisiones = decisiones.filter(function (value, index, arr) {
+                  return !(value.busqueda == decision.busqueda && value.username == decision.username);
+                })
               }
-            })
-            var ext = path.extname(elecciones);
-            chat(`@${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
-            con(`* ${tags.username} ${set.atq} "${path.basename(elecciones, ext)}"`);
-            //Erases the decision once fullfiled
-            decisiones = decisiones.filter(function (value, index, arr) {
-              return !(value.busqueda == decision.busqueda && value.username == decision.username);
             })
           }
           if (set.decisionDebug) {

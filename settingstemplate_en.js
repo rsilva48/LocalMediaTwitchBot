@@ -31,6 +31,8 @@ set.resumecmd = 'resume'; //Resume receiving request from play command.
 set.resetrccmd = 'reset'; //Reset request counter.
 set.requestscmd = 'requests'; //See how many requests the user have used, and how many remain.
 set.rmvcmd = 'remove'; //Remove song from queue.
+set.unlrq = 'unlimit'; //Unlimit how many requests a user can do.
+set.lrq = 'limit'; //Limit how many requests a user can do.
 
 //Personalization
 set.testresponse = 'pong!'; //Change the message send as a response to the test command.
@@ -53,9 +55,13 @@ set.psmsg = 'you have a pending selection'; //Message to be send when there's a 
 set.rmmsg = ['you have requested', 'times.', 'you have', 'requests left.', 'time', 'You have reached the limit.']; //Messages to be send when user ask for how many requests have been done.
 set.nrqmsg = 'you haven\t done any requests.' //Message to be send when there's no request done by the user
 set.rlimitrmsg = 'you have reached the requests limit.' //Message to be send when the user reached the requests limit.
-set.resetrcmsg = 'Request counter have been resetted.' //Message to be sent when requests counter is resetted.
+set.resetrcmsg = 'Request counter have been reset.' //Message to be sent when requests counter is resetted.
 set.ownnerrlmsg = 'You\'re the owner of the channel you don\'t have limits.' //Message to be send when the channel owner uses the request command.
 set.botignmsg = 'Bot messages are being ignored.' //Message to be displayed in console when bot messages are being ignored.
+set.ulusermsg = 'your requests have been unlimited.' //Message to be send when viewer use request command and owner unlimited number of requests for them.
+set.lusermsg = 'your requests have been limited.' //Message to be send when owner limited number of requests for a viewer.
+set.alusermsg = 'is already limited.' //Message to be send when owner tries to limit number of requests for a already limited viewer.
+set.aulusermsg = 'is already unlimited.' //Message to be send when owner tries to limit number of requests for a already unlimited viewer.
 
 //Debugging Settings
 set.debugOutput = false; //Enables or disable the bot debug output on console.
